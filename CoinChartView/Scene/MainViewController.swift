@@ -92,25 +92,16 @@ final class MainViewController: UIViewController{
         self.chartView.backgroundColor = .white
         // 구분값 보이기
         let timeStrArray = self.coinTimesArray.map{ convertDoubleToString($0) }
+        // 오른쪽 축 제거
+        self.chartView.rightAxis.enabled = false
         // x축 제거
         self.chartView.xAxis.enabled = false
-        self.chartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: timeStrArray)
-        // x축 label 위치 아래로 변경
-        self.chartView.xAxis.labelPosition = .bottom
-        // x축 label의 font와 색상 설정
-        self.chartView.xAxis.labelFont = .systemFont(ofSize: 13, weight: .light)
+        self.chartView.leftAxis.labelFont = .systemFont(ofSize: 11, weight: .light)
         // x축 세로선 제거
-        self.chartView.xAxis.drawGridLinesEnabled = false
-        // x축 처음, 마지막 label text 잘리지 않게 수정
-        self.chartView.xAxis.avoidFirstLastClippingEnabled = true
-        // x축 하단 범례 제거
         self.chartView.legend.enabled = false
-        self.chartView.xAxis.setLabelCount(12, force: true)
-        // 구분값 모두 보이기
-        self.chartView.xAxis.setLabelCount(self.coinPricesArray.count, force: false)
         // 생성한 함수 사용해서 데이터 적용
         self.setLineData(lineChartView: self.chartView, 
-                         lineChartDataEntries: self.entryData(values: self.coinPricesArray))
+                         lineChartDataEntries: self.entryData(x: self.coinTimesArray, y: self.coinPricesArray))
     }
     // MARK: - Chart
     // 데이터 적용하기
@@ -126,12 +117,12 @@ final class MainViewController: UIViewController{
         lineChartView.data = lineChartData
     }
     // entry 만들기
-    func entryData(values: [Double]) -> [ChartDataEntry] {
+    func entryData(x: [Double], y: [Double]) -> [ChartDataEntry] {
         // entry 담을 array
         var lineDataEntries: [ChartDataEntry] = []
         // 담기
-        for i in 0 ..< values.count {
-            let lineDataEntry = ChartDataEntry(x: Double(i), y: values[i])
+        for i in 0 ..< x.count {
+            let lineDataEntry = ChartDataEntry(x: x[i], y: y[i])
             lineDataEntries.append(lineDataEntry)
         }
         // 반환
@@ -178,7 +169,7 @@ final class MainViewController: UIViewController{
                 self.coinTimesArray = data.map{ $0.timestamp }
                 
                 DispatchQueue.main.async {
-                    self.priceLabel.text = String(format: "%2.f", self.coinData.first?.price ?? 0.0)
+                    self.priceLabel.text = String(format: "%2.f", self.coinData.first?.price ?? 0.0).insertComma()
                     self.setupChart()
                 }
                 
