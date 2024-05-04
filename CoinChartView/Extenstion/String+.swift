@@ -16,7 +16,8 @@ extension String{
             let result = numberFormatter.string(from: NSNumber(value: value))
             return "₩ " + result!
         }
-
-        return self
+        else{
+            return "₩ " + self
+        }
     }
 }

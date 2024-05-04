@@ -16,12 +16,16 @@ final class MainViewController: UIViewController{
     var marketData: [MarketModel] = []
     var marketNameArray: [String] = []
     
+    var currentMarket: MarketModel? // 현재 종목
+    
     private var coinData: [CoinModel] = []
     private var coinPricesArray: [Double] = []
     private var coinTimesArray: [Double] = []
     
     private let marketManager = MarketManager()
     private let coinManager = CoinManager()
+    
+    let markerView = CustomMarkerView()
     
     private lazy var searchButton: UIButton = {
        let button = UIButton()
@@ -83,22 +87,29 @@ final class MainViewController: UIViewController{
     }
     
     private func setupChart(){
+        // 차트에 데이터가 없을 경우
         self.chartView.noDataText = "출력 데이터가 없습니다."
-        // 기본 문구 폰트
         self.chartView.noDataFont = .systemFont(ofSize: 20)
-        // 기본 문구 색상
         self.chartView.noDataTextColor = .lightGray
-        // 차트 기본 뒷 배경색
-        self.chartView.backgroundColor = .white
-        // 구분값 보이기
-        let timeStrArray = self.coinTimesArray.map{ convertDoubleToString($0) }
+        // Chart Configuration
+        self.chartView.delegate = self // Chart delegate
+        self.chartView.backgroundColor = .white // 차트 기본 뒷 배경색
+        self.chartView.legend.enabled = false   // x축 세로선 제거
+        self.markerView.chartView = self.chartView // marker에 chart 등록
+        self.chartView.marker = markerView // chart에 marker등록
+        // 왼쪽 축 제거
+        self.chartView.leftAxis.enabled = false
         // 오른쪽 축 제거
         self.chartView.rightAxis.enabled = false
-        // x축 제거
-        self.chartView.xAxis.enabled = false
-        self.chartView.leftAxis.labelFont = .systemFont(ofSize: 11, weight: .light)
-        // x축 세로선 제거
-        self.chartView.legend.enabled = false
+        // x축
+        self.chartView.xAxis.enabled = true
+        self.chartView.xAxis.labelFont = .systemFont(ofSize: 11, weight: .light)
+        // x축 처음, 마지막 label text 잘리지 않게 수정
+        self.chartView.xAxis.avoidFirstLastClippingEnabled = true
+        // x축 Label
+        self.chartView.xAxis.labelPosition = .bottom // Label 위치
+        self.chartView.xAxis.setLabelCount(6, force: true) // Label 개수
+        self.chartView.xAxis.valueFormatter = CustomAxisFormatter() // Label Formatter
         // 생성한 함수 사용해서 데이터 적용
         self.setLineData(lineChartView: self.chartView, 
                          lineChartDataEntries: self.entryData(x: self.coinTimesArray, y: self.coinPricesArray))
@@ -109,6 +120,9 @@ final class MainViewController: UIViewController{
         // Entry들을 이용해 Data Set 만들기
         let lineChartdataSet = LineChartDataSet(entries: lineChartDataEntries)
         lineChartdataSet.drawCirclesEnabled = false // 점 제거
+        lineChartdataSet.highlightEnabled = true
+        lineChartdataSet.highlightLineWidth = 1.0
+        lineChartdataSet.highlightColor = .orange
         lineChartdataSet.lineWidth = 1.5
         lineChartdataSet.colors = [.systemBlue] // 라인 색상 설정
         // DataSet을 차트 데이터로 넣기
@@ -137,7 +151,9 @@ final class MainViewController: UIViewController{
     }
     // MARK: - Action
     @objc func didTapSearchBarButton(){
-        
+        let marketListViewController = MarketListViewController()
+        marketListViewController.marketData = self.marketData
+        self.navigationController?.pushViewController(marketListViewController, animated: true)
     }
     // MARK: - Network
     private func getMarketData(){
@@ -146,12 +162,23 @@ final class MainViewController: UIViewController{
             case .success(let data):
                 self.marketData = data
                 self.marketNameArray = data.map{ $0.korean_name } // 종목 이름만 배열 추가
-                self.market = self.marketData.first?.korean_name
-                self.marketCode = self.marketData.first?.market
-                DispatchQueue.main.async {
-                    self.marketLabel.text = self.marketData.first?.korean_name
+                // 현재 종목이 없을 경우(배열의 첫번째 값(비트코인)으로 설정)
+                if(self.currentMarket == nil){
+                    self.market = self.marketData.first?.korean_name
+                    self.marketCode = self.marketData.first?.market
+                    self.getChartData(code: self.marketCode)
+                    DispatchQueue.main.async {
+                        self.marketLabel.text = self.marketData.first?.korean_name
+                    }
                 }
-                self.getChartData(code: self.marketCode)
+                else{
+                    self.market = self.currentMarket?.korean_name
+                    self.marketCode = self.currentMarket?.market
+                    self.getChartData(code: self.currentMarket?.market)
+                    DispatchQueue.main.async {
+                        self.marketLabel.text = self.currentMarket?.korean_name
+                    }
+                }
                 break
             case .failure(let error):
                 print(error)
@@ -169,7 +196,15 @@ final class MainViewController: UIViewController{
                 self.coinTimesArray = data.map{ $0.timestamp }
                 
                 DispatchQueue.main.async {
-                    self.priceLabel.text = String(format: "%2.f", self.coinData.first?.price ?? 0.0).insertComma()
+                    let formatter = NumberFormatter()
+                    formatter.numberStyle = .decimal
+                    formatter.minimumFractionDigits = 0 // 최소 소수점 자릿수
+                    formatter.maximumFractionDigits = 5 // 최대 소수점 자릿수
+                    // 숫자를 문자열로 변환
+                    if let price =  self.coinData.first?.price,
+                       let formattedNumberString = formatter.string(from: NSNumber(value: price)) {
+                        self.priceLabel.text = formattedNumberString.insertComma()
+                    }
                     self.setupChart()
                 }
                 
@@ -179,5 +214,23 @@ final class MainViewController: UIViewController{
                 break
             }
         })
+    }
+}
+// MARK: - Chart Delegate
+extension MainViewController: ChartViewDelegate{
+    func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, highlight: Highlight) {
+        print("y : \(entry.y)")
+        self.markerView.priceLabel.text = "\(entry.y)"
+    }
+}
+
+// AxisValueFormatter 채택하여 Axis Label 설정
+class CustomAxisFormatter: AxisValueFormatter {
+    func stringForValue(_ value: Double, axis: AxisBase?) -> String {
+        let date = Date(timeIntervalSince1970: value)
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "M/d"
+        
+        return dateFormatter.string(from: date)
     }
 }
