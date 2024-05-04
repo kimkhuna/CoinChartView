@@ -48,6 +48,7 @@ final class MainViewController: UIViewController{
     
     private lazy var chartView: LineChartView = {
        let chartView = LineChartView()
+        chartView.delegate = self
         return chartView
     }()
     
@@ -92,7 +93,6 @@ final class MainViewController: UIViewController{
         self.chartView.noDataFont = .systemFont(ofSize: 20)
         self.chartView.noDataTextColor = .lightGray
         // Chart Configuration
-        self.chartView.delegate = self // Chart delegate
         self.chartView.backgroundColor = .white // 차트 기본 뒷 배경색
         self.chartView.legend.enabled = false   // x축 세로선 제거
         self.markerView.chartView = self.chartView // marker에 chart 등록

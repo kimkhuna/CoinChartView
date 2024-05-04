@@ -6,13 +6,13 @@
 //
 
 import UIKit
-import SnapKit
 import DGCharts
 
 class CustomMarkerView: MarkerView{
     
-    let contentView = UIView()
-    let priceLabel = UILabel()
+    @IBOutlet weak var contentView: UIView!
+    @IBOutlet weak var priceLabel: UILabel!
+    
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -23,11 +23,7 @@ class CustomMarkerView: MarkerView{
         initUI()
     }
     private func initUI() {
-        priceLabel.textColor = .black
-        addSubview(priceLabel)
-        
-        priceLabel.snp.makeConstraints{
-            $0.top.bottom.leading.trailing.equalToSuperview()
-        }
+        Bundle.main.loadNibNamed("CustomMarkerView", owner: self, options: nil)
+        self.addSubview(contentView)
     }
 }

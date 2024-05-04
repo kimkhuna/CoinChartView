@@ -10,6 +10,7 @@
 		111967F094E66625E7C83F76 /* Pods_CoinChartView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B1B8C608EFF1E4092F8FE5F9 /* Pods_CoinChartView.framework */; };
 		6C4775FF2BE5FD1F0089C13D /* MarketListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C4775FE2BE5FD1F0089C13D /* MarketListViewController.swift */; };
 		6C4776012BE6087B0089C13D /* CustomMarkerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C4776002BE6087B0089C13D /* CustomMarkerView.swift */; };
+		6C4776032BE610B30089C13D /* CustomMarkerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6C4776022BE610B30089C13D /* CustomMarkerView.xib */; };
 		6C5636682BDCCD5900B03FCC /* String+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C5636672BDCCD5900B03FCC /* String+.swift */; };
 		6CE833DC2BDCB0ED0033A224 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CE833DB2BDCB0ED0033A224 /* AppDelegate.swift */; };
 		6CE833DE2BDCB0ED0033A224 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CE833DD2BDCB0ED0033A224 /* SceneDelegate.swift */; };
@@ -27,6 +28,7 @@
 		5AD512A45C948C201979F19B /* Pods-CoinChartView.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CoinChartView.debug.xcconfig"; path = "Target Support Files/Pods-CoinChartView/Pods-CoinChartView.debug.xcconfig"; sourceTree = "<group>"; };
 		6C4775FE2BE5FD1F0089C13D /* MarketListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketListViewController.swift; sourceTree = "<group>"; };
 		6C4776002BE6087B0089C13D /* CustomMarkerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomMarkerView.swift; sourceTree = "<group>"; };
+		6C4776022BE610B30089C13D /* CustomMarkerView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CustomMarkerView.xib; sourceTree = "<group>"; };
 		6C5636672BDCCD5900B03FCC /* String+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+.swift"; sourceTree = "<group>"; };
 		6CE833D82BDCB0ED0033A224 /* CoinChartView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoinChartView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6CE833DB2BDCB0ED0033A224 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -119,6 +121,7 @@
 				6CE833EF2BDCB2390033A224 /* MainViewController.swift */,
 				6C4775FE2BE5FD1F0089C13D /* MarketListViewController.swift */,
 				6C4776002BE6087B0089C13D /* CustomMarkerView.swift */,
+				6C4776022BE610B30089C13D /* CustomMarkerView.xib */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
@@ -203,6 +206,7 @@
 			files = (
 				6CE833E52BDCB0EE0033A224 /* Assets.xcassets in Resources */,
 				6CE833E82BDCB0EE0033A224 /* Base in Resources */,
+				6C4776032BE610B30089C13D /* CustomMarkerView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
